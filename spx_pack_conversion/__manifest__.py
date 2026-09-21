@@ -1,0 +1,22 @@
+{
+    'name': 'Spxcorp Pack Conversion',
+    'version': '19.0.1.0.0',
+    'summary': 'Buy and sell cases, boxes, packs and loose units with separate stock and prices',
+    'author': 'Spxcorp Limited',
+    'license': 'LGPL-3',
+    'category': 'Inventory/Inventory',
+    'depends': ['mrp_account', 'product_expiry'],
+    'data': [
+        'security/security.xml',
+        'security/ir.model.access.csv',
+        'data/sequence.xml',
+        'views/pack_rule_views.xml',
+        'views/conversion_views.xml',
+        'wizard/pack_setup_views.xml',
+        'views/product_views.xml',
+        'views/native_views.xml',
+        'views/menu.xml',
+    ],
+    'application': True,
+    'installable': True,
+}

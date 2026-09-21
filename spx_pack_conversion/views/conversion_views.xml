@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_pack_conversion_list" model="ir.ui.view">
+        <field name="name">spx.pack.conversion.list</field><field name="model">spx.pack.conversion</field>
+        <field name="arch" type="xml">
+            <list decoration-muted="state == 'cancel'" decoration-success="state == 'done'">
+                <field name="name"/><field name="rule_id"/><field name="direction"/><field name="pack_qty"/>
+                <field name="source_qty"/><field name="source_product_id"/><field name="target_qty"/><field name="target_product_id"/>
+                <field name="location_id" optional="hide"/><field name="completed_by" optional="show"/><field name="completed_at" optional="show"/>
+                <field name="company_id" groups="base.group_multi_company"/><field name="state" widget="badge"/>
+            </list>
+        </field>
+    </record>
+    <record id="view_pack_conversion_form" model="ir.ui.view">
+        <field name="name">spx.pack.conversion.form</field><field name="model">spx.pack.conversion</field>
+        <field name="arch" type="xml">
+            <form string="Pack Conversion" duplicate="false">
+                <header>
+                    <button name="action_confirm" type="object" string="Confirm Conversion" class="btn-primary" invisible="state != 'draft'" confirm="Confirm that the physical packs/items match this conversion. Odoo will consume the source stock and create the resulting stock."/>
+                    <button name="action_cancel" type="object" string="Cancel" invisible="state != 'draft'"/>
+                    <button name="action_reverse" type="object" string="Create Reversal" groups="spx_pack_conversion.group_pack_manager" invisible="state != 'done' or reverse_of_id or reversal_count" confirm="Create a full reversal? Confirm it only when the stock can physically be restored. Current native costs will apply."/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box"><button name="action_stock_moves" type="object" class="oe_stat_button" icon="fa-exchange" invisible="not production_id"><span class="o_stat_text">Stock Movements</span></button></div>
+                    <h1><field name="name"/></h1>
+                    <field name="reversal_count" invisible="1"/>
+                    <div class="alert alert-warning" role="alert" invisible="not reverse_of_id">This reverses a completed conversion. Enter a reason and confirm only after physically restoring the stock.</div>
+                    <group>
+                        <group>
+                            <field name="company_id" groups="base.group_multi_company" readonly="state != 'draft' or reverse_of_id"/>
+                            <field name="rule_id" readonly="state != 'draft' or reverse_of_id" options="{'no_create': True}"/>
+                            <field name="direction" readonly="state != 'draft' or reverse_of_id"/>
+                            <field name="pack_qty" readonly="state != 'draft' or reverse_of_id"/>
+                        </group>
+                        <group>
+                            <field name="location_id" readonly="state != 'draft' or reverse_of_id" options="{'no_create': True}"/>
+                            <field name="location_dest_id" readonly="state != 'draft' or reverse_of_id" options="{'no_create': True}"/>
+                            <field name="tracking" invisible="1"/>
+                            <field name="source_lot_id" domain="[('product_id', '=', source_product_id), ('company_id', '=', company_id)]" options="{'no_create': True}" invisible="tracking != 'lot'" required="tracking == 'lot'" readonly="state != 'draft' or reverse_of_id"/>
+                            <field name="available_qty" invisible="state != 'draft'"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Stock Consumed"><field name="source_product_id"/><field name="source_qty"/><field name="source_uom_id"/></group>
+                        <group string="Stock Produced"><field name="target_product_id"/><field name="target_qty"/><field name="target_uom_id"/><field name="target_lot_id" invisible="not target_lot_id"/></group>
+                    </group>
+                    <group string="Record">
+                        <field name="reason" readonly="state != 'draft'" required="reverse_of_id" placeholder="Optional notes; required for a reversal"/>
+                        <field name="reverse_of_id" invisible="not reverse_of_id"/>
+                        <field name="production_id" invisible="not production_id"/>
+                        <field name="completed_by" invisible="state != 'done'"/><field name="completed_at" invisible="state != 'done'"/>
+                        <field name="currency_id" invisible="1"/><field name="transferred_value" invisible="state != 'done'" groups="spx_pack_conversion.group_pack_manager"/>
+                    </group>
+                    <field name="reversal_ids" invisible="not reversal_count" readonly="1"><list create="false" delete="false"><field name="name"/><field name="state"/><field name="reason"/></list></field>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+    <record id="view_pack_conversion_search" model="ir.ui.view">
+        <field name="name">spx.pack.conversion.search</field><field name="model">spx.pack.conversion</field>
+        <field name="arch" type="xml"><search>
+            <field name="name"/><field name="rule_id"/><field name="source_product_id"/><field name="target_product_id"/>
+            <filter name="draft" string="Draft" domain="[('state', '=', 'draft')]"/><filter name="done" string="Done" domain="[('state', '=', 'done')]"/>
+            <separator/><filter name="reversal" string="Reversals" domain="[('reverse_of_id', '!=', False)]"/>
+            <separator/><filter name="group_pack" string="Pack Configuration" context="{'group_by': 'rule_id'}"/><filter name="group_date" string="Completion Date" context="{'group_by': 'completed_at:month'}"/>
+        </search></field>
+    </record>
+    <record id="action_pack_conversions" model="ir.actions.act_window">
+        <field name="name">Conversions</field><field name="res_model">spx.pack.conversion</field><field name="view_mode">list,form</field>
+        <field name="help" type="html"><p class="o_view_nocontent_smiling_face">Open a pack when you need loose stock.</p><p>Select the pack configuration, quantity and stock location. A purchase order is not required.</p></field>
+    </record>
+</odoo>

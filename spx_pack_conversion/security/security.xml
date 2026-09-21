@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="privilege_pack_conversion" model="res.groups.privilege">
+        <field name="name">Pack Conversion</field>
+        <field name="category_id" ref="base.module_category_supply_chain"/>
+        <field name="sequence">25</field>
+    </record>
+    <record id="group_pack_user" model="res.groups">
+        <field name="name">Operator</field>
+        <field name="privilege_id" ref="privilege_pack_conversion"/>
+        <field name="implied_ids" eval="[(4, ref('mrp.group_mrp_user'))]"/>
+    </record>
+    <record id="group_pack_manager" model="res.groups">
+        <field name="name">Manager</field>
+        <field name="privilege_id" ref="privilege_pack_conversion"/>
+        <field name="implied_ids" eval="[(4, ref('group_pack_user')), (4, ref('product.group_product_manager'))]"/>
+        <field name="user_ids" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+    </record>
+    <record id="stock.group_stock_manager" model="res.groups">
+        <field name="implied_ids" eval="[(4, ref('group_pack_manager'))]"/>
+    </record>
+    <record id="rule_pack_company" model="ir.rule">
+        <field name="name">Pack configuration company</field>
+        <field name="model_id" ref="model_spx_pack_rule"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_conversion_company" model="ir.rule">
+        <field name="name">Pack conversion company</field>
+        <field name="model_id" ref="model_spx_pack_conversion"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+</odoo>

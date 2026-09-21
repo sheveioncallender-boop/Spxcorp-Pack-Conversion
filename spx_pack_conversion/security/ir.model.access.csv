@@ -1,0 +1,6 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_rule_user,Pack rules operator,model_spx_pack_rule,group_pack_user,1,0,0,0
+access_rule_manager,Pack rules manager,model_spx_pack_rule,group_pack_manager,1,1,1,1
+access_conversion_user,Conversions operator,model_spx_pack_conversion,group_pack_user,1,1,1,0
+access_conversion_manager,Conversions manager,model_spx_pack_conversion,group_pack_manager,1,1,1,1
+access_setup_manager,Create packs manager,model_spx_pack_setup,group_pack_manager,1,1,1,1

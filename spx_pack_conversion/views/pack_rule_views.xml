@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_pack_rule_list" model="ir.ui.view">
+        <field name="name">spx.pack.rule.list</field>
+        <field name="model">spx.pack.rule</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="pack_product_id"/>
+                <field name="units_per_pack"/>
+                <field name="unit_product_id"/>
+                <field name="pack_price" groups="spx_pack_conversion.group_pack_manager"/>
+                <field name="unit_price" groups="spx_pack_conversion.group_pack_manager"/>
+                <field name="allow_repack" optional="hide"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <button name="action_convert" type="object" string="Convert" icon="fa-exchange"/>
+            </list>
+        </field>
+    </record>
+    <record id="view_pack_rule_form" model="ir.ui.view">
+        <field name="name">spx.pack.rule.form</field>
+        <field name="model">spx.pack.rule</field>
+        <field name="arch" type="xml">
+            <form string="Pack Configuration">
+                <header><button name="action_convert" type="object" string="Convert" class="btn-primary" invisible="not active"/></header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_history" type="object" class="oe_stat_button" icon="fa-exchange"><field name="conversion_count" widget="statinfo" string="Conversions"/></button>
+                    </div>
+                    <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="active"/>
+                    <field name="active" invisible="1"/>
+                    <div class="oe_title"><label for="name"/><h1><field name="name" placeholder="Blue Water 500ml — Case of 24"/></h1></div>
+                    <group>
+                        <group string="Pack and Contents">
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="pack_product_id" domain="[('is_storable', '=', True), ('tracking', '!=', 'serial')]" context="{'default_type': 'consu', 'default_is_storable': True}"/>
+                            <field name="units_per_pack"/>
+                            <field name="unit_product_id" domain="[('is_storable', '=', True), ('tracking', '!=', 'serial')]" context="{'default_type': 'consu', 'default_is_storable': True}"/>
+                            <field name="allow_repack"/>
+                        </group>
+                        <group string="Independent Prices and Barcodes">
+                            <field name="currency_id" invisible="1"/>
+                            <field name="pack_price" widget="monetary" groups="spx_pack_conversion.group_pack_manager"/>
+                            <field name="unit_price" widget="monetary" groups="spx_pack_conversion.group_pack_manager"/>
+                            <field name="pack_barcode" groups="spx_pack_conversion.group_pack_manager"/>
+                            <field name="unit_barcode"/>
+                        </group>
+                    </group>
+                    <div class="alert alert-info" role="alert">Set the selling price of each product independently. Receiving a pack keeps it as a pack until you confirm a conversion. Prices follow the normal Odoo currency, tax and pricelist settings.</div>
+                    <group string="On Hand in Your Active Companies"><field name="pack_on_hand"/><field name="unit_on_hand"/></group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+    <record id="view_pack_rule_search" model="ir.ui.view">
+        <field name="name">spx.pack.rule.search</field><field name="model">spx.pack.rule</field>
+        <field name="arch" type="xml"><search><field name="name"/><field name="pack_product_id"/><field name="unit_product_id"/><filter name="archived" string="Archived" domain="[('active', '=', False)]"/></search></field>
+    </record>
+    <record id="action_pack_rules" model="ir.actions.act_window">
+        <field name="name">Pack Configurations</field><field name="res_model">spx.pack.rule</field><field name="view_mode">list,form</field>
+        <field name="help" type="html"><p class="o_view_nocontent_smiling_face">Link a case, box or pack to the items inside it.</p><p>Use Create Pack Product to make a new pack from an existing item, or New to link two existing products.</p></field>
+    </record>
+</odoo>

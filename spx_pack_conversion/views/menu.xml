@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_pack_root" name="Pack Conversion" sequence="45" web_icon="spx_pack_conversion,static/description/icon.svg" groups="group_pack_user"/>
+    <menuitem id="menu_pack_conversions" name="Conversions" parent="menu_pack_root" action="action_pack_conversions" sequence="10"/>
+    <menuitem id="menu_pack_rules" name="Pack Configurations" parent="menu_pack_root" action="action_pack_rules" sequence="20"/>
+    <menuitem id="menu_pack_setup" name="Create Pack Product" parent="menu_pack_root" action="action_pack_setup" sequence="30" groups="group_pack_manager"/>
+    <menuitem id="menu_inventory_conversions" name="Pack Conversions" parent="stock.menu_stock_warehouse_mgmt" action="action_pack_conversions" sequence="45" groups="group_pack_user"/>
+</odoo>
